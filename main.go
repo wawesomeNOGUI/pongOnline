@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 	"sync"
+	"math"
 	//"reflect"
 	//"encoding/binary"
 
@@ -291,12 +292,16 @@ func getSyncMapReadyForSending(m *sync.Map){
 
 func gameSimulation(m *sync.Map){
 	for{
-		m.Range(func (key, value {}interface) {
-			if Abs(value[0] + 25 - ball[0]) < 25 && Abs(value[1] + 12 - ball[1]) < 12 {
-				ball[1] = value[1] + 5  //move ball up a bit for bounce
+		m.Range(func (key, value interface{}) bool {
+
+			if math.Abs(value.([]int)[0] + 25 - ball[0]) < 25 && math.Abs(value.([]int)[1] + 12 - ball[1]) < 12 {
+				ball[1] = value.([]int)[1] + 5  //move ball up a bit for bounce
 				ball[3] = ball[3]*-1    //switch y speed
-				ball[2] = value[2] / 2  //set x speed
+				ball[2] = value.([]int)[2] / 2  //set x speed
 			}
+
+			//If our function passed to Range returns false, Range stops iteration
+			return true
 		})
 	}
 }
@@ -308,7 +313,7 @@ var UpdatesString string
 
 //Ball Info Slice
 //index 0 = x, 1 = y, 2 = xSpeed, 3 = ySpeed
-var ball []int = {0, 0, 0, 0}
+var ball = []int{0, 0, 0, 0}
 
 var NumberOfPlayers int
 
