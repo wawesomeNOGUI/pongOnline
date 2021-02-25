@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 	"sync"
-	"math"
 	//"reflect"
 	//"encoding/binary"
 
@@ -112,7 +111,15 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 			//fmt.Println(UpdatesString)
 			// Send the message as text so we can JSON.parse in javascript
+			//First send player updates
 			sendErr := dataChannel.SendText(UpdatesString)
+			if sendErr != nil {
+				fmt.Println("data send err", sendErr)
+				break
+			}
+
+			//Then send ball updates
+			sendErr = dataChannel.Send(ball)
 			if sendErr != nil {
 				fmt.Println("data send err", sendErr)
 				break
@@ -293,8 +300,19 @@ func getSyncMapReadyForSending(m *sync.Map){
 func gameSimulation(m *sync.Map){
 	for{
 		m.Range(func (key, value interface{}) bool {
+			var absX int
+			var absY int
 
-			if math.Abs(value.([]int)[0] + 25 - ball[0]) < 25 && math.Abs(value.([]int)[1] + 12 - ball[1]) < 12 {
+			//Absolute value the x and y player ints
+			if value.([]int)[0] < 0 {
+				absX = value.([]int)[0]*-1
+			}
+			if value.([]int)[1] < 0 {
+				absY = value.([]int)[1]*-1
+			}
+
+
+			if (absX + 25 - ball[0]) < 25 && (absY + 12 - ball[1]) < 12 {
 				ball[1] = value.([]int)[1] + 5  //move ball up a bit for bounce
 				ball[3] = ball[3]*-1    //switch y speed
 				ball[2] = value.([]int)[2] / 2  //set x speed
