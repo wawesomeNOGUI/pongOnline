@@ -311,9 +311,9 @@ func gameSimulation(m *sync.Map){
 
 
 					if absX < 25 && absY < 12 {
-						ball[1] = value.([]int)[1] + 5  //move ball up a bit for bounce
 						ball[3] = ball[3]*-1    //switch y speed
-						ball[2] = value.([]int)[2] / 2  //set x speed
+						ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
+						ball[1] = value.([]int)[1] + ball[3]  //move ball up or down a bit for bounce
 					}
 			}
 
@@ -335,7 +335,7 @@ func gameSimulation(m *sync.Map){
 
 		// Check for Hitting Bottom or Top
 		if ball[1] < 0 || ball[1] > 500 {
-			ball[1] = 250
+			ball[3] = ball[3] * -1
 		}
 
 		// Move Ball
