@@ -36,15 +36,21 @@ var interpolateCounter = 0;
 var render = function () {
 
    //Draw Background
-   context.fillStyle = "#000000";
+   context.fillStyle = "#FF00FF";
    context.fillRect(0, 0, width, height);
 
    //Draw Players
    if(interpolation != undefined && previousUpdates != undefined && Updates != undefined && interpolateCounter >= 0 && Object.keys(previousUpdates).length == Object.keys(Updates).length){
 
      for (var key in interpolation) {     //interpolation defined in index.html
-        if (interpolation.hasOwnProperty(key))  {
-          context.fillStyle = "#FF00FF";
+        if (key == "ball")  {
+          //Ball
+          context.beginPath();
+          context.arc(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter, previousUpdates[key][1] + interpolation[key][1]*interpolateCounter, 5, 2 * Math.PI, false);
+          context.fillStyle = "#000000";
+          context.fill();
+        }else{
+          context.fillStyle = "#0000FF";
           context.fillRect(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter, previousUpdates[key][1] + interpolation[key][1]*interpolateCounter, 50, 50);
           //console.log(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter)
         }
@@ -72,11 +78,7 @@ var render = function () {
    //context.drawImage(pew, playerX, playerY, 200, 100, 100,100,50,50);
   //context.drawImage(pew, playerX, playerY, 200, 100);
 
-  //Ball
-  context.beginPath();
-  context.arc(ballX, ballY, 5, 2 * Math.PI, false);
-  context.fillStyle = "#000000";
-  context.fill();
+
 
 };
 
@@ -87,12 +89,13 @@ var update = function() {
 keyPress();
 
 //check for ball hitting this player's paddle (client prediction)
+/*
 if (Math.abs( playerX - ballX ) < playerWidth && Math.abs( playerY - playerWidth/2 - ballY ) < playerHeight/2) {
       ballSpeedY = 3;
       ballSpeedX += (playerSpeedX / 2);
       //this.y += this.y_speed;
 }
-
+*/
 
 };
 
@@ -150,7 +153,7 @@ keysDown[event.keyCode] = true;
 
 window.addEventListener("keyup", function (event) {
     delete keysDown[event.keyCode];
-    if (event.keyCode = 37 || event.keyCode = 39){
+    if (event.keyCode == 37 || event.keyCode == 39){
       playerSpeedX = 0;
       TCPChan.send("S" + playerSpeedX);
     }

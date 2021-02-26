@@ -118,12 +118,6 @@ func echo(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 
-			//Then send ball updates
-			sendErr = dataChannel.Send(ball)
-			if sendErr != nil {
-				fmt.Println("data send err", sendErr)
-				break
-			}
 		}
 
 	})
@@ -312,7 +306,7 @@ func gameSimulation(m *sync.Map){
 			}
 
 
-			if (absX + 25 - ball[0]) < 25 && (absY + 12 - ball[1]) < 12 {
+			if (absX + 25 - ball[0]) < 25 && (absY + 12 - ball[1]) < 12 && key != "ball"{
 				ball[1] = value.([]int)[1] + 5  //move ball up a bit for bounce
 				ball[3] = ball[3]*-1    //switch y speed
 				ball[2] = value.([]int)[2] / 2  //set x speed
@@ -321,6 +315,26 @@ func gameSimulation(m *sync.Map){
 			//If our function passed to Range returns false, Range stops iteration
 			return true
 		})
+		time.Sleep(time.Millisecond*20)
+		// Now store ball[] in Updates sync.Map
+		Updates.Store("ball", ball[:2])
+
+		// Simulate ball
+		if ball[0] < 0 {
+			ball[0] = 0
+			ball[2] = ball[2]*-1
+		}else if ball[0] > 500 {
+			ball[0] = 500
+			ball[2] = ball[2]*-1
+		}
+
+		if ball[1] < 0 || ball[1] > 500 {
+			ball[1] = 250
+		}
+
+		// Move Ball
+		ball[0] += ball[2]  //x
+		ball[1] += ball[3]  //y
 	}
 }
 
@@ -331,7 +345,7 @@ var UpdatesString string
 
 //Ball Info Slice
 //index 0 = x, 1 = y, 2 = xSpeed, 3 = ySpeed
-var ball = []int{0, 0, 0, 0}
+var ball = []int{250, 250, 0, 3}
 
 var NumberOfPlayers int
 
