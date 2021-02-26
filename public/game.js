@@ -22,8 +22,8 @@ var playerScores = [];  //Each Player will use their playerTag from the server
 
 var playerX = 0;
 var playerY = 0;
-var playerHeight = 25;
-var playerWidth = 50;
+var pHeight = 25;
+var pWidth = 50;
 var playerSpeedX = 0;
 
 var ballX = 0;
@@ -49,9 +49,9 @@ var render = function () {
           context.arc(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter, previousUpdates[key][1] + interpolation[key][1]*interpolateCounter, 5, 2 * Math.PI, false);
           context.fillStyle = "#000000";
           context.fill();
-        }else{
+        }else if (key != playerTag){ //playerTag defined in index
           context.fillStyle = "#0000FF";
-          context.fillRect(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter, previousUpdates[key][1] + interpolation[key][1]*interpolateCounter, 50, 50);
+          context.fillRect(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter, previousUpdates[key][1] + interpolation[key][1]*interpolateCounter, pWidth, pHeight);
           //console.log(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter)
         }
      }
@@ -66,7 +66,7 @@ var render = function () {
      for (var key in Updates) {     //Updates defined in index.html
         if (Updates.hasOwnProperty(key))  {
           context.fillStyle = "#FF00FF";
-          context.fillRect(Updates[key][0], Updates[key][1], 50, 50);
+          context.fillRect(Updates[key][0], Updates[key][1], pWidth, pHeight);
           //console.log("oh dear")
         }
      }
@@ -74,7 +74,7 @@ var render = function () {
 
    //Local Player
    context.fillStyle = "#F7FF0F";   //yellow
-   context.fillRect(playerX, playerY, 50, 50);
+   context.fillRect(playerX, playerY, pWidth, pHeight);
    //context.drawImage(pew, playerX, playerY, 200, 100, 100,100,50,50);
   //context.drawImage(pew, playerX, playerY, 200, 100);
 
