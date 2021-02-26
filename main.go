@@ -298,20 +298,19 @@ func gameSimulation(m *sync.Map){
 					var absX int
 					var absY int
 
-					//Absolute value the x and y player ints
-					if value.([]int)[0] < 0 {
-						absX = value.([]int)[0]*-1
-					}else{
-						absX = value.([]int)[0]
+					//Absolute value the x and y player ints - the ball x and y
+					absX = value.([]int)[0] + 25 - ball[0]
+					absY = value.([]int)[1] + 12 - ball[1]
+
+					if absX < 0 {
+						absX = absX * -1
 					}
-					if value.([]int)[1] < 0 {
-						absY = value.([]int)[1]*-1
-					}else{
-						absX = value.([]int)[1]
+					if absY < 0 {
+						absY = absY * -1
 					}
 
 
-					if (absX + 25 - ball[0]) < 25 && (absY + 12 - ball[1]) < 12 {
+					if absX < 25 && absY < 12 {
 						ball[1] = value.([]int)[1] + 5  //move ball up a bit for bounce
 						ball[3] = ball[3]*-1    //switch y speed
 						ball[2] = value.([]int)[2] / 2  //set x speed
