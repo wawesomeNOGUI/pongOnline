@@ -108,7 +108,6 @@ window.addEventListener("load", function(evt) {
 
           UDPChan.onmessage = function(e){
             numMessages++;
-            console.log(e.data);
             //Save previous update to use for entity interpolation
             if (Updates != undefined){
               previousUpdates = JSON.parse(JSON.stringify(Updates));

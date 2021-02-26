@@ -294,32 +294,38 @@ func getSyncMapReadyForSending(m *sync.Map){
 func gameSimulation(m *sync.Map){
 	for{
 		m.Range(func (key, value interface{}) bool {
-			var absX int
-			var absY int
+			if key != "ball" {
+					var absX int
+					var absY int
 
-			//Absolute value the x and y player ints
-			if value.([]int)[0] < 0 {
-				absX = value.([]int)[0]*-1
-			}
-			if value.([]int)[1] < 0 {
-				absY = value.([]int)[1]*-1
-			}
+					//Absolute value the x and y player ints
+					if value.([]int)[0] < 0 {
+						absX = value.([]int)[0]*-1
+					}else{
+						absX = value.([]int)[0]
+					}
+					if value.([]int)[1] < 0 {
+						absY = value.([]int)[1]*-1
+					}else{
+						absX = value.([]int)[1]
+					}
 
 
-			if (absX + 25 - ball[0]) < 25 && (absY + 12 - ball[1]) < 12 && key != "ball"{
-				ball[1] = value.([]int)[1] + 5  //move ball up a bit for bounce
-				ball[3] = ball[3]*-1    //switch y speed
-				ball[2] = value.([]int)[2] / 2  //set x speed
+					if (absX + 25 - ball[0]) < 25 && (absY + 12 - ball[1]) < 12 {
+						ball[1] = value.([]int)[1] + 5  //move ball up a bit for bounce
+						ball[3] = ball[3]*-1    //switch y speed
+						ball[2] = value.([]int)[2] / 2  //set x speed
+					}
 			}
 
 			//If our function passed to Range returns false, Range stops iteration
 			return true
 		})
-		time.Sleep(time.Millisecond*20)
-		// Now store ball[] in Updates sync.Map
-		Updates.Store("ball", ball[:2])
 
 		// Simulate ball
+		time.Sleep(time.Millisecond*20)
+
+		// Check for Hitting Sides
 		if ball[0] < 0 {
 			ball[0] = 0
 			ball[2] = ball[2]*-1
@@ -328,6 +334,7 @@ func gameSimulation(m *sync.Map){
 			ball[2] = ball[2]*-1
 		}
 
+		// Check for Hitting Bottom or Top
 		if ball[1] < 0 || ball[1] > 500 {
 			ball[1] = 250
 		}
@@ -335,6 +342,9 @@ func gameSimulation(m *sync.Map){
 		// Move Ball
 		ball[0] += ball[2]  //x
 		ball[1] += ball[3]  //y
+
+		// Now store ball[] in Updates sync.Map
+		Updates.Store("ball", ball[:2])
 	}
 }
 
