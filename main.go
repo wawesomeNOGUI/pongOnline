@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -27,7 +28,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
-	fmt.Println("User connected from: ", c.RemoteAddr())
+	log.Println("User connected from: ", c.RemoteAddr())
 
 	//===========This Player's Variables===================
 	var playerTag string
@@ -102,7 +103,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 //====================No retransmits, ordered dataChannel=======================
 	// Register channel opening handling
 	dataChannel.OnOpen(func() {
-		fmt.Printf("Data channel '%s'-'%d' open. Random messages will now be sent to any connected DataChannels\n", dataChannel.Label(), dataChannel.ID())
+		//fmt.Printf("Data channel '%s'-'%d' open. Random messages will now be sent to any connected DataChannels\n", dataChannel.Label(), dataChannel.ID())
 
 		for {
 			time.Sleep(time.Millisecond*50) //50 milliseconds = 20 updates per second
@@ -134,7 +135,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	reliableChannel.OnOpen(func() {
 
 			//Send Client their playerTag so they know who they are in the Updates Array
-			sendErr := reliableChannel.SendText(playerTag)
+			sendErr := reliableChannel.SendText("pTag" + playerTag)
 			if sendErr != nil {
 				panic(err)
 			}
@@ -212,7 +213,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	// in a production application you should exchange ICE Candidates via OnICECandidate
 	<-gatherComplete
 
-	fmt.Println(*peerConnection.LocalDescription())
+	//fmt.Println(*peerConnection.LocalDescription())
 
 	//Send the SDP with the final ICE candidate to the browser as our offer
 	err = c.WriteMessage(1, []byte(signal.Encode(*peerConnection.LocalDescription()))) //write message back to browser, 1 means message in byte format?
@@ -299,8 +300,8 @@ func gameSimulation(m *sync.Map){
 					var absY int
 
 					//Absolute value the x and y player ints - the ball x and y
-					absX = value.([]int)[0] + 25 - ball[0]
-					absY = value.([]int)[1] + 12 - ball[1]
+					absX = value.([]int)[0] - 5 + pWidth - ball[0]
+					absY = value.([]int)[1] - 5 + pHeight - ball[1]
 
 					if absX < 0 {
 						absX = absX * -1
@@ -310,10 +311,17 @@ func gameSimulation(m *sync.Map){
 					}
 
 
-					if absX < 25 && absY < 12 {
-						ball[3] = ball[3]*-1    //switch y speed
-						ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
-						ball[1] = value.([]int)[1] + ball[3]  //move ball up or down a bit for bounce
+					if absX < pWidth && absY < pHeight {
+						if ball[1] <= value.([]int)[1] + pHeight {
+							ball[1] = value.([]int)[1] - 5
+							ball[3] = ball[3]*-1    //switch y speed
+							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
+						}else{
+							ball[1] = value.([]int)[1] + pWidth + 5
+							ball[3] = ball[3]*-1    //switch y speed
+							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
+						}
+
 					}
 			}
 
@@ -334,7 +342,11 @@ func gameSimulation(m *sync.Map){
 		}
 
 		// Check for Hitting Bottom or Top
-		if ball[1] < 0 || ball[1] > 500 {
+		if ball[1] < 0 {
+			ball[1] = 0
+			ball[3] = ball[3] * -1
+		}else if ball[1] > 500 {
+			ball[1] = 500
 			ball[3] = ball[3] * -1
 		}
 
@@ -357,6 +369,10 @@ var UpdatesString string
 var ball = []int{250, 250, 0, 3}
 
 var NumberOfPlayers int
+
+//Player width and height
+var pWidth int = 30
+var pHeight int = 14
 
 
 func main() {
