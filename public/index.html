@@ -147,7 +147,8 @@ window.addEventListener("load", function(evt) {
           TCPChan.onopen = () => console.log(TCPChan.label + ' has opened');
           TCPChan.onmessage = function(e){
             //The first message is expexted to be the player tag
-            playerTag = e.data;
+            playerTag = e.data.slice(4, e.data.length);
+            //console.log(e.timeStamp)
           };
 
           window.sendMessage = () => {

@@ -25,6 +25,7 @@ var playerY = 0;
 var pHeight = 25;
 var pWidth = 50;
 var playerSpeedX = 0;
+var playerSpeedY = 0;
 
 var ballX = 0;
 var ballY = 0;
@@ -116,21 +117,24 @@ for(var key in keysDown) {
 
    if (value == 37) {   //37 = left
      playerX = playerX - 4;
-     playerSpeedX = - 4;
+     playerSpeedX = -4;
      TCPChan.send("X" + playerX);
-     TCPChan.send("S" + playerSpeedX);
-	    //Put stuff for keypress to activate here
-   } else if(value == 39){  //38 = right
+     TCPChan.send("SX" + playerSpeedX);
+   } else if(value == 39){  //39 = right
      playerX = playerX + 4;
-     playerSpeedX = + 4;
+     playerSpeedX = 4;
      TCPChan.send("X" + playerX);
-     TCPChan.send("S" + playerSpeedX);
+     TCPChan.send("SX" + playerSpeedX);
    } else if(value == 40){  //40 = down
      playerY = playerY + 4;
+     playerSpeedY = 4;
      TCPChan.send("Y" + playerY);
-   } else if(value == 38){  //39 = up
+     TCPChan.send("SY" + playerSpeedY);
+   } else if(value == 38){  //38 = up
      playerY = playerY - 4;
+     playerSpeedY = -4;
      TCPChan.send("Y" + playerY);
+     TCPChan.send("SY" + playerSpeedY);
    }
 
  }
@@ -153,9 +157,13 @@ keysDown[event.keyCode] = true;
 
 window.addEventListener("keyup", function (event) {
     delete keysDown[event.keyCode];
-    if (event.keyCode == 37 || event.keyCode == 39){
+    if (event.keyCode == 37 || event.keyCode == 39) {
       playerSpeedX = 0;
-      TCPChan.send("S" + playerSpeedX);
+      TCPChan.send("SX" + playerSpeedX);
+    }
+    if (event.keyCode == 38 || event.keyCode == 40) {
+      playerSpeedY = 0;
+      TCPChan.send("SY" + playerSpeedY);
     }
 
 });

@@ -91,8 +91,8 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(playerTag)
 
 			//Store a slice for player x, y, and other data
-			//Initially we'll just have starting x, y, and x speed values
-			Updates.Store(playerTag, []int{0, 0, 0})
+			//Initially we'll just have starting x, y, and x, y speed values
+			Updates.Store(playerTag, []int{0, 0, 0, 0})
 
 		}else if connectionState == 5 || connectionState == 6 || connectionState == 7{
 			Updates.Delete(playerTag)
@@ -175,8 +175,8 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 			playerSlice.([]int)[1] = y
 			Updates.Store( playerTag, playerSlice )
-		}else if msg.Data[0] == 83 {  //83 = "S"
-		 s, err := strconv.Atoi( string(msg.Data[1:]) );
+		}else if msg.Data[0] == 83 && msg.Data[1] == 88 {  //83, 88 = "SX"
+		 s, err := strconv.Atoi( string(msg.Data[2:]) );
 				if err != nil{
 					fmt.Println(err)
 				}
@@ -188,6 +188,21 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 			playerSlice.([]int)[2] = s
 			Updates.Store( playerTag, playerSlice )
+		}else if msg.Data[0] == 83 && msg.Data[1] == 89 {  //83, 89 = "SY"
+		 s, err := strconv.Atoi( string(msg.Data[2:]) );
+				if err != nil{
+					fmt.Println(err)
+				}
+
+			playerSlice, ok := Updates.Load(playerTag)
+			if ok == false {
+				fmt.Println("Uh oh")
+			}
+			
+			playerSlice.([]int)[3] = s
+			Updates.Store( playerTag, playerSlice )
+		} else {
+			fmt.Println( string(msg.Data) )
 		}
 	})
 
@@ -300,8 +315,8 @@ func gameSimulation(m *sync.Map){
 					var absY int
 
 					//Absolute value the x and y player ints - the ball x and y
-					absX = value.([]int)[0] - 5 + pWidth - ball[0]
-					absY = value.([]int)[1] - 5 + pHeight - ball[1]
+					absX = value.([]int)[0] + pWidth/2 - ball[0]
+					absY = value.([]int)[1] + pHeight/2 - ball[1]
 
 					if absX < 0 {
 						absX = absX * -1
@@ -311,15 +326,32 @@ func gameSimulation(m *sync.Map){
 					}
 
 
-					if absX < pWidth && absY < pHeight {
-						if ball[1] <= value.([]int)[1] + pHeight {
-							ball[1] = value.([]int)[1] - 5
-							ball[3] = ball[3]*-1    //switch y speed
+					if absX < pWidth/2 + bRadius && absY < pHeight/2 + bRadius {
+
+						// Top bounce within paddle width
+						if ball[1] <= value.([]int)[1] + pHeight && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
+							ball[1] = value.([]int)[1] - bRadius
+							ball[3] = -1 * (ball[3] + value.([]int)[3] / 2)   //switch y speed
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
-						}else{
-							ball[1] = value.([]int)[1] + pWidth + 5
-							ball[3] = ball[3]*-1    //switch y speed
+							// Bottom bounce within paddle width
+						}else if ball[1] > value.([]int)[1] + pHeight && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
+							ball[1] = value.([]int)[1] + pWidth + bRadius
+							ball[3] = -1 * (ball[3] + value.([]int)[3] / 2)   //switch y speed
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
+fmt.Println("bottom")
+							// Side bounce left
+						}else if ball[0] <= value.([]int)[0] + pWidth/2 {
+							ball[0] = value.([]int)[0] - bRadius
+							ball[2] = -1 * (ball[2] + value.([]int)[2] / 2)  //set x speed
+
+							fmt.Println("yes")
+
+							// Else must've hit right side
+						}else if ball[0] > value.([]int)[0] + pWidth/2 {
+							ball[0] = value.([]int)[0] + pWidth + bRadius
+							ball[2] = -1 * (ball[2] + value.([]int)[2] / 2)  //set x speed
+
+							fmt.Println("right")
 						}
 
 					}
@@ -366,13 +398,16 @@ var UpdatesString string
 
 //Ball Info Slice
 //index 0 = x, 1 = y, 2 = xSpeed, 3 = ySpeed
-var ball = []int{250, 250, 0, 3}
+var ball = []int{250, 250, 3, 0}
 
 var NumberOfPlayers int
 
 //Player width and height
-var pWidth int = 30
-var pHeight int = 14
+var pWidth int = 50
+var pHeight int = 25
+
+// Ball Radius
+var bRadius int = 5
 
 
 func main() {
