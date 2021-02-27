@@ -40,9 +40,10 @@ var render = function () {
    context.fillStyle = "#FF00FF";
    context.fillRect(0, 0, width, height);
 
-   //Draw Players
+   //Draw Stuff From Server Updates Object
    if(interpolation != undefined && previousUpdates != undefined && Updates != undefined && interpolateCounter >= 0 && Object.keys(previousUpdates).length == Object.keys(Updates).length){
 
+     // Draw Players
      for (var key in interpolation) {     //interpolation defined in index.html
         if (key == "ball")  {
           //Ball
@@ -50,7 +51,7 @@ var render = function () {
           context.arc(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter, previousUpdates[key][1] + interpolation[key][1]*interpolateCounter, 5, 2 * Math.PI, false);
           context.fillStyle = "#000000";
           context.fill();
-        }else if (key != playerTag){ //playerTag defined in index
+        }else if (key != playerTag){ //(don't redraw yourself) playerTag defined in index
           context.fillStyle = "#0000FF";
           context.fillRect(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter, previousUpdates[key][1] + interpolation[key][1]*interpolateCounter, pWidth, pHeight);
           //console.log(previousUpdates[key][0] + interpolation[key][0]*interpolateCounter)
@@ -62,6 +63,12 @@ var render = function () {
      }else{
        interpolateCounter = -1;
      }
+
+     //Draw Scores
+     context.font = "30px Arial";
+     context.fillStyle = "#000000";
+     context.fillText(Updates["scoreT"], 10, 50);
+     context.fillText(Updates["scoreB"], 10, 250);
 
    }else{
      for (var key in Updates) {     //Updates defined in index.html

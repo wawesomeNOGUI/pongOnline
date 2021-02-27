@@ -122,6 +122,15 @@ window.addEventListener("load", function(evt) {
 
               for (var key in interpolation) {
 
+                if ( key == "scoreT" ) {
+                  delete interpolation["scoreT"];
+                  continue
+                }
+                if ( key == "scoreB" ) {
+                  delete interpolation["scoreT"];
+                  continue
+                }
+
                 var tempX = Updates[key][0] - previousUpdates[key][0];
                 tempX = tempX/interpolateFrames;
                 interpolation[key][0] = tempX;

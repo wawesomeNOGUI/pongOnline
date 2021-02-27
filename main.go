@@ -198,7 +198,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			if ok == false {
 				fmt.Println("Uh oh")
 			}
-			
+
 			playerSlice.([]int)[3] = s
 			Updates.Store( playerTag, playerSlice )
 		} else {
@@ -310,7 +310,7 @@ func getSyncMapReadyForSending(m *sync.Map){
 func gameSimulation(m *sync.Map){
 	for{
 		m.Range(func (key, value interface{}) bool {
-			if key != "ball" {
+			if key != "ball" && key != "scoreT" && key != "scoreB" {
 					var absX int
 					var absY int
 
@@ -338,20 +338,17 @@ func gameSimulation(m *sync.Map){
 							ball[1] = value.([]int)[1] + pWidth + bRadius
 							ball[3] = -1 * (ball[3] + value.([]int)[3] / 2)   //switch y speed
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
-fmt.Println("bottom")
+
 							// Side bounce left
 						}else if ball[0] <= value.([]int)[0] + pWidth/2 {
 							ball[0] = value.([]int)[0] - bRadius
 							ball[2] = -1 * (ball[2] + value.([]int)[2] / 2)  //set x speed
-
-							fmt.Println("yes")
 
 							// Else must've hit right side
 						}else if ball[0] > value.([]int)[0] + pWidth/2 {
 							ball[0] = value.([]int)[0] + pWidth + bRadius
 							ball[2] = -1 * (ball[2] + value.([]int)[2] / 2)  //set x speed
 
-							fmt.Println("right")
 						}
 
 					}
@@ -375,11 +372,21 @@ fmt.Println("bottom")
 
 		// Check for Hitting Bottom or Top
 		if ball[1] < 0 {
-			ball[1] = 0
-			ball[3] = ball[3] * -1
+			ball[0] = 250
+			ball[1] = 250
+			ball[2] = 0
+			ball[3] = -3
+			scoreBottom++
+			Updates.Store("scoreB", []int{scoreBottom})
+			time.Sleep(time.Second)
 		}else if ball[1] > 500 {
-			ball[1] = 500
-			ball[3] = ball[3] * -1
+			ball[0] = 250
+			ball[1] = 250
+			ball[2] = 0
+			ball[3] = 3
+			scoreTop++
+			Updates.Store("scoreT", []int{scoreTop})
+			time.Sleep(time.Second)
 		}
 
 		// Move Ball
@@ -398,7 +405,7 @@ var UpdatesString string
 
 //Ball Info Slice
 //index 0 = x, 1 = y, 2 = xSpeed, 3 = ySpeed
-var ball = []int{250, 250, 3, 0}
+var ball = []int{250, 250, 0, 3}
 
 var NumberOfPlayers int
 
@@ -409,8 +416,16 @@ var pHeight int = 25
 // Ball Radius
 var bRadius int = 5
 
+// Scores
+var scoreTop int = 0
+var scoreBottom int = 0
+
+
 
 func main() {
+
+	Updates.Store("scoreT", []int{scoreTop})
+	Updates.Store("scoreB", []int{scoreBottom})
 
 	go getSyncMapReadyForSending(&Updates)
 	go gameSimulation(&Updates)
