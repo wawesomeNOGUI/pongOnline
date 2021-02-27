@@ -32,7 +32,7 @@ var ws;
 
 
 window.addEventListener("load", function(evt) {
-  ws = new WebSocket("ws://162.200.58.171:80/echo");  //address to connect to, /echo triggers go echo function
+  ws = new WebSocket("ws:///162.200.58.171:80/echo");  //address to connect to, /echo triggers go echo function
 
   ws.onopen = function(evt) {
       console.log("OPEN");
@@ -121,6 +121,15 @@ window.addEventListener("load", function(evt) {
             if(previousUpdates != undefined && Updates != undefined && Object.keys(previousUpdates).length == Object.keys(Updates).length){
 
               for (var key in interpolation) {
+
+                if ( key == "scoreT" ) {
+                  delete interpolation["scoreT"];
+                  continue
+                }
+                if ( key == "scoreB" ) {
+                  delete interpolation["scoreT"];
+                  continue
+                }
 
                 var tempX = Updates[key][0] - previousUpdates[key][0];
                 tempX = tempX/interpolateFrames;
