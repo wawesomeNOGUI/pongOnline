@@ -28,6 +28,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
+	defer fmt.Println("Bye!")
 	log.Println("User connected from: ", c.RemoteAddr())
 
 	//===========This Player's Variables===================
@@ -97,6 +98,11 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		}else if connectionState == 5 || connectionState == 6 || connectionState == 7{
 			Updates.Delete(playerTag)
 			fmt.Println("Deleted Player")
+
+			err := peerConnection.Close()  //deletes all references to this peerconnection in mem and same for ICE agent (ICE agent releases the "closed" status)?
+			if err != nil {							   //https://www.w3.org/TR/webrtc/#dom-rtcpeerconnection-close
+				fmt.Println(err)
+			}
 		}
 	})
 
@@ -329,18 +335,20 @@ func gameSimulation(m *sync.Map){
 					if absX < pWidth/2 + bRadius && absY < pHeight/2 + bRadius {
 
 						// Top bounce within paddle width
-						if ball[1] <= value.([]int)[1] + pHeight && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
+						if ball[1] <= value.([]int)[1] + pHeight/2 && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
 							ball[1] = value.([]int)[1] - bRadius
 							ball[3] = -1 * (ball[3] + value.([]int)[3] / 2)   //switch y speed
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
 							// Bottom bounce within paddle width
-						}else if ball[1] > value.([]int)[1] + pHeight && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
+						}else if ball[1] > value.([]int)[1] + pHeight/2 && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
 							ball[1] = value.([]int)[1] + pWidth + bRadius
 							ball[3] = -1 * (ball[3] + value.([]int)[3] / 2)   //switch y speed
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
 
 							// Side bounce left
-						}else if ball[0] <= value.([]int)[0] + pWidth/2 {
+						}
+						/*
+						else if ball[0] <= value.([]int)[0] + pWidth/2 {
 							ball[0] = value.([]int)[0] - bRadius
 							ball[2] = -1 * (ball[2] + value.([]int)[2] / 2)  //set x speed
 
@@ -350,6 +358,8 @@ func gameSimulation(m *sync.Map){
 							ball[2] = -1 * (ball[2] + value.([]int)[2] / 2)  //set x speed
 
 						}
+
+						*/
 
 					}
 			}
