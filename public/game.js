@@ -70,8 +70,8 @@ var render = function () {
      //Draw Scores
      context.font = "30px Arial";
      context.fillStyle = "#000000";
-     context.fillText(Updates["scoreT"], 10, 50);
-     context.fillText(Updates["scoreB"], 10, 250);
+     context.fillText(Updates["scoreT"], 10, 275);
+     context.fillText(Updates["scoreB"], 10, 350);
 
    }else{
      //draw nothing
