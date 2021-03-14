@@ -124,7 +124,6 @@ func echo(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("data send err", sendErr)
 				break
 			}
-
 		}
 
 	})
@@ -341,7 +340,7 @@ func gameSimulation(m *sync.Map){
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
 							// Bottom bounce within paddle width
 						}else if ball[1] > value.([]int)[1] + pHeight/2 && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
-							ball[1] = value.([]int)[1] + pWidth + bRadius
+							ball[1] = value.([]int)[1] + pHeight + bRadius
 							ball[3] = -1 * (ball[3] + value.([]int)[3] / 2)   //switch y speed
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
 
@@ -381,17 +380,17 @@ func gameSimulation(m *sync.Map){
 		}
 
 		// Check for Hitting Bottom or Top
-		if ball[1] < 0 {
-			ball[0] = 250
-			ball[1] = 250
+		if ball[1] < -10 {
+			ball[0] = 200
+			ball[1] = 300
 			ball[2] = 0
 			ball[3] = -3
 			scoreBottom++
 			Updates.Store("scoreB", []int{scoreBottom})
 			time.Sleep(time.Second)
-		}else if ball[1] > 500 {
-			ball[0] = 250
-			ball[1] = 250
+		}else if ball[1] > 610 {
+			ball[0] = 200
+			ball[1] = 300
 			ball[2] = 0
 			ball[3] = 3
 			scoreTop++
@@ -415,7 +414,7 @@ var UpdatesString string
 
 //Ball Info Slice
 //index 0 = x, 1 = y, 2 = xSpeed, 3 = ySpeed
-var ball = []int{250, 250, 0, 3}
+var ball = []int{200, 300, 0, 3}
 
 var NumberOfPlayers int
 
