@@ -36,12 +36,11 @@ var interpolateCounter = 0;
 
 var render = function () {
 
-   //Draw Background
-   context.fillStyle = "#FF00FF";
-   context.fillRect(0, 0, width, height);
-
    //Draw Stuff From Server Updates Object
    if(interpolation != undefined && previousUpdates != undefined && Updates != undefined && interpolateCounter >= 0 && Object.keys(previousUpdates).length == Object.keys(Updates).length){
+     //Draw Background
+     context.fillStyle = "#FF00FF";
+     context.fillRect(0, 0, width, height);
 
      // Draw Players
      for (var key in interpolation) {     //interpolation defined in index.html
@@ -71,13 +70,7 @@ var render = function () {
      context.fillText(Updates["scoreB"], 10, 250);
 
    }else{
-     for (var key in Updates) {     //Updates defined in index.html
-        if (Updates.hasOwnProperty(key))  {
-          context.fillStyle = "#FF00FF";
-          context.fillRect(Updates[key][0], Updates[key][1], pWidth, pHeight);
-          //console.log("oh dear")
-        }
-     }
+     //draw nothing
    }
 
    //Local Player
