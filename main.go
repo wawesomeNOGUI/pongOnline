@@ -374,8 +374,8 @@ func gameSimulation(m *sync.Map){
 		if ball[0] < 0 {
 			ball[0] = 0
 			ball[2] = ball[2]*-1
-		}else if ball[0] > 500 {
-			ball[0] = 500
+		}else if ball[0] > 400 {
+			ball[0] = 400
 			ball[2] = ball[2]*-1
 		}
 
