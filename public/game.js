@@ -5,8 +5,8 @@ var animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame
         window.setTimeout(callback, 1000/60)
     };
 var canvas = document.createElement("canvas");
-var width = 500;
-var height = 500;
+var width = 400;
+var height = 600;
 canvas.width = width;
 canvas.height = height;
 var context = canvas.getContext('2d');
@@ -41,6 +41,10 @@ var render = function () {
      //Draw Background
      context.fillStyle = "#FF00FF";
      context.fillRect(0, 0, width, height);
+
+     //Draw Net
+     context.fillStyle = "#FFFF00";
+     context.fillRect(0,300,width,5);
 
      // Draw Players
      for (var key in interpolation) {     //interpolation defined in index.html
