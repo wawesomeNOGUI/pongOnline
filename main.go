@@ -330,12 +330,12 @@ func gameSimulation(m *sync.Map){
 						absY = absY * -1
 					}
 
-
+					// Check if paddle is close enough to the ball to hit
 					if absX < pWidth/2 + bRadius && absY < pHeight/2 + bRadius {
 
 						// Top bounce within paddle width
 						if ball[1] <= value.([]int)[1] + pHeight/2 && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
-							ball[1] = value.([]int)[1] - bRadius
+							ball[1] = value.([]int)[1] - bRadius // set ball y postition
 							//If < 0 than the signs must be opposite on yspeed ball and player, so switch direction
 							if value.([]int)[3] * ball[3] <= 0 {
 								//Cap speed
@@ -346,7 +346,7 @@ func gameSimulation(m *sync.Map){
 									temp = ball[3]
 								}
 
-								if temp <= maxBallYSpeed {
+								if temp <= maxBallSpeed {
 									ball[3] = -1 * ball[3] + (value.([]int)[3] /2) //switch y speed
 								} else {
 									ball[3] = -1 * ball[3]
@@ -355,7 +355,7 @@ func gameSimulation(m *sync.Map){
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
 							// Bottom bounce within paddle width
 						}else if ball[1] > value.([]int)[1] + pHeight/2 && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
-							ball[1] = value.([]int)[1] + pHeight + bRadius
+							ball[1] = value.([]int)[1] + pHeight + bRadius // set ball y postition
 							//If < 0 than the signs must be opposite on yspeed ball and player, so switch direction
 							if value.([]int)[3] * ball[3] <= 0 {
 								//Cap speed
@@ -366,7 +366,7 @@ func gameSimulation(m *sync.Map){
 									temp = ball[3]
 								}
 
-								if temp <= maxBallYSpeed {
+								if temp <= maxBallSpeed {
 									ball[3] = -1 * ball[3] + (value.([]int)[3] /2) //switch y speed
 								} else {
 									ball[3] = -1 * ball[3]
@@ -376,20 +376,82 @@ func gameSimulation(m *sync.Map){
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
 
 							// Side bounce left
-						}
-						/*
-						else if ball[0] <= value.([]int)[0] + pWidth/2 {
-							ball[0] = value.([]int)[0] - bRadius
-							ball[2] = -1 * (ball[2] + value.([]int)[2] / 2)  //set x speed
+						}else if ball[0] <= value.([]int)[0] + pWidth/2 {
+							ball[0] = value.([]int)[0] - bRadius // set ball x position
+							//If < 0 than the signs must be opposite on xspeed ball and player, so switch direction
+							if value.([]int)[2] * ball[2] <= 0 {
+								var temp int
+								if ball[2] < 0 {
+									temp = ball[2]*-1
+								}else{
+									temp = ball[2]
+								}
+
+								if temp <= maxBallSpeed {
+									ball[2] = -1 * ball[2] + (value.([]int)[2] /2) //switch x speed
+								} else {
+									ball[2] = -1 * ball[2]
+								}
+							}
+
+							//Set y speed of ball too
+							if value.([]int)[3] * ball[3] <= 0 {
+								//Cap speed
+								var temp int
+								if ball[3] < 0 {
+									temp = ball[3]*-1
+								}else{
+									temp = ball[3]
+								}
+
+								if temp <= maxBallSpeed {
+									ball[3] = -1 * ball[3] + (value.([]int)[3] /2) //switch y speed
+								} else {
+									ball[3] = -1 * ball[3]
+								}
+
+							}
 
 							// Else must've hit right side
 						}else if ball[0] > value.([]int)[0] + pWidth/2 {
-							ball[0] = value.([]int)[0] + pWidth + bRadius
-							ball[2] = -1 * (ball[2] + value.([]int)[2] / 2)  //set x speed
+							ball[0] = value.([]int)[0] + pWidth + bRadius // set ball x position
+							//If < 0 than the signs must be opposite on xspeed ball and player, so switch direction
+							if value.([]int)[2] * ball[2] <= 0 {
+								var temp int
+								if ball[2] < 0 {
+									temp = ball[2]*-1
+								}else{
+									temp = ball[2]
+								}
+
+								if temp <= maxBallSpeed {
+									ball[2] = -1 * ball[2] + (value.([]int)[2] /2) //switch x speed
+								} else {
+									ball[2] = -1 * ball[2]
+								}
+							}
+
+							//Set y speed of ball too
+							if value.([]int)[3] * ball[3] <= 0 {
+								//Cap speed
+								var temp int
+								if ball[3] < 0 {
+									temp = ball[3]*-1
+								}else{
+									temp = ball[3]
+								}
+
+								if temp <= maxBallSpeed {
+									ball[3] = -1 * ball[3] + (value.([]int)[3] /2) //switch y speed
+								} else {
+									ball[3] = -1 * ball[3]
+								}
+
+							}
 
 						}
 
-						*/
+
 
 					}
 			}
@@ -446,7 +508,9 @@ var UpdatesString string
 //Ball Info Slice
 //index 0 = x, 1 = y, 2 = xSpeed, 3 = ySpeed
 var ball = []int{200, 300, 0, 3}
-var maxBallYSpeed int = 10
+var maxBallSpeed int = 10
+// Ball Radius
+var bRadius int = 5
 
 var NumberOfPlayers int
 
@@ -454,8 +518,7 @@ var NumberOfPlayers int
 var pWidth int = 50
 var pHeight int = 25
 
-// Ball Radius
-var bRadius int = 5
+
 
 // Scores
 var scoreTop int = 0
