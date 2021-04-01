@@ -336,12 +336,43 @@ func gameSimulation(m *sync.Map){
 						// Top bounce within paddle width
 						if ball[1] <= value.([]int)[1] + pHeight/2 && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
 							ball[1] = value.([]int)[1] - bRadius
-							ball[3] = -1 * (ball[3] + value.([]int)[3] / 2)   //switch y speed
+							//If < 0 than the signs must be opposite on yspeed ball and player, so switch direction
+							if value.([]int)[3] * ball[3] <= 0 {
+								//Cap speed
+								var temp int
+								if ball[3] < 0 {
+									temp = ball[3]*-1
+								}else{
+									temp = ball[3]
+								}
+
+								if temp <= maxBallYSpeed {
+									ball[3] = -1 * ball[3] + (value.([]int)[3] /2) //switch y speed
+								} else {
+									ball[3] = -1 * ball[3]
+								}
+							}
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
 							// Bottom bounce within paddle width
 						}else if ball[1] > value.([]int)[1] + pHeight/2 && ball[0] > value.([]int)[0] && ball[0] < value.([]int)[0] + pWidth {
 							ball[1] = value.([]int)[1] + pHeight + bRadius
-							ball[3] = -1 * (ball[3] + value.([]int)[3] / 2)   //switch y speed
+							//If < 0 than the signs must be opposite on yspeed ball and player, so switch direction
+							if value.([]int)[3] * ball[3] <= 0 {
+								//Cap speed
+								var temp int
+								if ball[3] < 0 {
+									temp = ball[3]*-1
+								}else{
+									temp = ball[3]
+								}
+
+								if temp <= maxBallYSpeed {
+									ball[3] = -1 * ball[3] + (value.([]int)[3] /2) //switch y speed
+								} else {
+									ball[3] = -1 * ball[3]
+								}
+
+							}
 							ball[2] = ball[2] + value.([]int)[2] / 2  //set x speed
 
 							// Side bounce left
@@ -415,6 +446,7 @@ var UpdatesString string
 //Ball Info Slice
 //index 0 = x, 1 = y, 2 = xSpeed, 3 = ySpeed
 var ball = []int{200, 300, 0, 3}
+var maxBallYSpeed int = 10
 
 var NumberOfPlayers int
 
