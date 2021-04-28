@@ -12,6 +12,20 @@ canvas.height = height;
 var context = canvas.getContext('2d');
 
 
+var fontReady = false;
+
+//Get font
+var f = new FontFace("Press Start 2P", 'url(https://fonts.gstatic.com/s/pressstart2p/v9/e3t4euO8T-267oIAQAu6jDQyK3nYivN04w.woff2) format(\'woff2\')');
+//var f = new FontFace("Press Start 2P", 'url(https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap) format(\'woff2\')');
+
+  f.load().then(function(e) {
+    // Ready to use the font in a canvas context
+    console.log(e);
+    document.fonts.add(e);
+    fontReady = true;
+});
+
+
 
 
 var keysDown = {};     //This creates var for keysDown event
@@ -68,10 +82,13 @@ var render = function () {
      }
 
      //Draw Scores
-     context.font = "30px Arial";
-     context.fillStyle = "#000000";
-     context.fillText(Updates["scoreT"], 10, 275);
-     context.fillText(Updates["scoreB"], 10, 350);
+     if(fontReady){
+       context.font = "32px monospace Press Start 2P";  //We import PressStart2P in style.css
+       context.fillStyle = "#000000";
+       context.fillText(Updates["scoreT"], 10, 275);
+       context.fillText(Updates["scoreB"], 10, 350);
+     }
+
 
    }else{
      //draw nothing
@@ -92,15 +109,16 @@ var render = function () {
 
 var update = function() {
 keyPress();
-
-//check for ball hitting this player's paddle (client prediction)
 /*
-if (Math.abs( playerX - ballX ) < playerWidth && Math.abs( playerY - playerWidth/2 - ballY ) < playerHeight/2) {
-      ballSpeedY = 3;
-      ballSpeedX += (playerSpeedX / 2);
-      //this.y += this.y_speed;
+//check for ball hitting this player's paddle (client prediction)
+if (Updates != undefined){
+  if (Math.abs( playerX - Updates.ball[0] ) < pWidth && Math.abs( playerY - pWidth/2 - Updates.ball[1]) < pHeight/2) {
+    //Move ball (drawing only, doesn't affect real ball position server side)
+        Updates.ball = [playerX, playerY];
+  }
 }
 */
+
 
 };
 

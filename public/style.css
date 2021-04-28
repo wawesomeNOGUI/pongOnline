@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap');
+/*Or maybe use this one*/
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap');
+}

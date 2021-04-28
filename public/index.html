@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
 <html>
+<link rel="stylesheet" href="style.css">
+
+<span style="font-family: 'Press Start 2P', cursive;">&nbsp;</span>
 
 <br/>
 
@@ -32,7 +35,7 @@ var ws;
 
 
 window.addEventListener("load", function(evt) {
-  ws = new WebSocket("ws:///162.200.58.171:80/echo");  //address to connect to, /echo triggers go echo function
+  ws = new WebSocket("ws://162.200.58.171:80/echo");  //address to connect to, /echo triggers go echo function
 
   ws.onopen = function(evt) {
       console.log("OPEN");

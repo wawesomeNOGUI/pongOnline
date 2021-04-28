@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,14 +14,12 @@ import (
 	"github.com/gorilla/websocket"
 
 	"github.com/pion/webrtc/v3"
-	"github.com/wawesomeNOGUI/pongOnline/internal/signal"
+	"github.com/wawesomeNOGUI/webrtcGamerServer/internal/signal"
 )
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
-
-var api *webrtc.API
 
 func echo(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -39,7 +36,6 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 	//===========WEBRTC====================================
 	// Prepare the configuration
-	/*
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
 			{
@@ -47,10 +43,9 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
-	*/
+
 	// Create a new RTCPeerConnection
-	//peerConnection, err := webrtc.NewPeerConnection(config)
-	peerConnection, err := api.NewPeerConnection(webrtc.Configuration{})
+	peerConnection, err := webrtc.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
 	}
@@ -538,37 +533,11 @@ func main() {
 	go getSyncMapReadyForSending(&Updates)
 	go gameSimulation(&Updates)
 
-	// Listen on UDP Port 80, will be used for all WebRTC traffic
-	udpListener, err := net.ListenUDP("udp", &net.UDPAddr{
-		IP:   net.IP{0, 0, 0, 0},
-		Port: 80,
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("Listening for WebRTC traffic at %s\n", udpListener.LocalAddr())
-
-	// Create a SettingEngine, this allows non-standard WebRTC behavior
-	settingEngine := webrtc.SettingEngine{}
-
-	//Our Public Candidate is declared here cause were not using a STUN server for discovery
-	//and just hardcoding the open port, and port forwarding webrtc traffic on the router
-	settingEngine.SetNAT1To1IPs([]string{"162.200.58.171"}, webrtc.ICECandidateTypeHost)
-
-	// Configure our SettingEngine to use our UDPMux. By default a PeerConnection has
-	// no global state. The API+SettingEngine allows the user to share state between them.
-	// In this case we are sharing our listening port across many.
-	settingEngine.SetICEUDPMux(webrtc.NewICEUDPMux(nil, udpListener))
-
-	// Create a new API using our SettingEngine
-	api = webrtc.NewAPI(webrtc.WithSettingEngine(settingEngine))
-
 	fileServer := http.FileServer(http.Dir("./public"))
 	http.HandleFunc("/echo", echo) //this request comes from webrtc.html
 	http.Handle("/", fileServer)
 
-	err = http.ListenAndServe(":80", nil) //Http server blocks
+	err := http.ListenAndServe(":80", nil) //Http server blocks
 	if err != nil {
 		panic(err)
 	}

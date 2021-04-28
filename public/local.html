@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 
 <html>
+<!--
+<link rel="stylesheet" href="style.css">
+
+<span style="font-family: 'Press Start 2P', cursive;">&nbsp;</span>
+-->
 
 <br/>
 
@@ -68,6 +73,7 @@ window.addEventListener("load", function(evt) {
   pc.oniceconnectionstatechange = e => {
     console.log(pc.iceConnectionState)
     if (pc.iceConnectionState == "connected"){
+      //First get player names & send to server
       animate(step); //start client side loop in game.js
     }
   }
